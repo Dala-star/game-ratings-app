@@ -34,7 +34,7 @@ function App() {
   ================================================= */
   const fetchGames = async () => {
     try {
-      const res = await fetch("http://localhost:5000/games");
+      const res = await fetch("https://game-ratings-app.onrender.com/games");
       const data = await res.json();
       setGames(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -70,7 +70,7 @@ const addGame = async () => {
   if (!key) return;
 
   try {
-    const res = await fetch("http://localhost:5000/games", {
+    const res = await fetch("https://game-ratings-app.onrender.com/games", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -108,7 +108,7 @@ const addGame = async () => {
     // clamp 1–5
     rating = Math.max(1, Math.min(5, rating));
 
-    const res = await fetch(`http://localhost:5000/games/${id}/rate`, {
+    const res = await fetch(`https://game-ratings-app.onrender.com/games/${id}/rate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ rating })
@@ -127,7 +127,7 @@ const addGame = async () => {
     const text = commentInputs[id];
     if (!text) return;
 
-    const res = await fetch(`http://localhost:5000/games/${id}/comment`, {
+    const res = await fetch(`https://game-ratings-app.onrender.com/games/${id}/comment`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, user })
@@ -145,7 +145,7 @@ const addGame = async () => {
   const submitSuggestion = async () => {
     if (!suggestion.gameTitle) return;
 
-    const res = await fetch("http://localhost:5000/suggestions", {
+    const res = await fetch("https://game-ratings-app.onrender.com/suggestions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(suggestion)
