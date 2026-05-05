@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 
 function App() {
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [expanded, setExpanded] = useState(null);
   const [games, setGames] = useState([]);
   const [user] = useState("Guest");
 
@@ -189,8 +191,8 @@ const addGame = async () => {
           placeholder="Search games..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-        />
-
+          style={styles.input}
+       />
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -199,9 +201,16 @@ const addGame = async () => {
           <option value="rating">Top Rated</option>
         </select>
       </div>
+      <button
+  onClick={() => setShowAdmin(!showAdmin)}
+  style={styles.button}
+>
+  {showAdmin ? "Hide Admin Panel" : "Admin Panel"}
+</button>
 
-      {/* ADMIN ADD GAME */}
-      <div style={styles.adminBox}>
+{/* ADMIN ADD GAME */}
+{showAdmin && (
+  <div style={styles.adminBox}>
         <h3>Admin Panel - Add Game</h3>
 
         {Object.keys(newGame).map((key) => (
@@ -217,6 +226,7 @@ const addGame = async () => {
 
         <button onClick={addGame}>➕ Add Game</button>
       </div>
+)}
 
       {/* SUGGESTION SYSTEM */}
       <div style={styles.adminBox}>
@@ -276,6 +286,12 @@ const addGame = async () => {
               </div>
 
               <div>{game.genre}</div>
+        <button
+              onClick={() => setExpanded(expanded === game._id ? null : game._id)}
+               style={styles.button}
+>  
+              {expanded === game._id ? "Close" : "View Details"}
+        </button>
 
               {/* RATE */}
               <input
@@ -288,7 +304,7 @@ const addGame = async () => {
                   })
                 }
               />
-              <button onClick={() => rateGame(game._id)}>
+              <button onClick={() => rateGame(game._id)} style={styles.button}>
                 Rate
               </button>
 
@@ -310,7 +326,7 @@ const addGame = async () => {
                     })
                   }
                 />
-                <button onClick={() => addComment(game._id)}>
+                <button onClick={() => addComment(game._id)} style={styles.button}>
                   Post
                 </button>
               </div>
@@ -324,12 +340,71 @@ const addGame = async () => {
 
 /* ================= STYLES ================= */
 const styles = {
-  page: { padding: 20, background: "#0f172a", color: "white" },
-  controls: { display: "flex", gap: 10 },
-  adminBox: { margin: 20, padding: 10, background: "#1e293b" },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px,1fr))", gap: 20 },
-  card: { background: "#1e293b", padding: 10, borderRadius: 10 },
-  image: { width: "100%", height: 180, objectFit: "cover" }
-};
+  page: {
+    minHeight: "100vh",
+    padding: "16px",
+    background: "linear-gradient(135deg, #020617, #0f172a)",
+    color: "white",
+    fontFamily: "Arial, sans-serif",
+    boxSizing: "border-box"
+  },
 
+  controls: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    marginBottom: "20px"
+  },
+
+  adminBox: {
+    margin: "20px 0",
+    padding: "16px",
+    background: "#1e293b",
+    borderRadius: "14px",
+    display: "grid",
+    gap: "10px"
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "18px"
+  },
+
+  card: {
+    background: "#1e293b",
+    padding: "14px",
+    borderRadius: "16px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+    overflow: "hidden"
+  },
+
+  image: {
+    width: "100%",
+    height: "200px",
+    objectFit: "cover",
+    borderRadius: "12px"
+  },
+
+  input: {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "10px",
+    border: "none",
+    boxSizing: "border-box",
+    marginTop: "8px"
+  },
+
+  button: {
+    width: "100%",
+    background: "#2563eb",
+    color: "white",
+    border: "none",
+    padding: "12px",
+    borderRadius: "10px",
+    marginTop: "8px",
+    cursor: "pointer",
+    fontWeight: "bold"
+  }
+};
 export default App;
