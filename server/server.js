@@ -5,7 +5,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://game-ratings-app.vercel.app"
+}));
 app.use(express.json());
 
 /* ================= MODELS ================= */
