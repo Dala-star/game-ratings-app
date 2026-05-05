@@ -211,7 +211,7 @@ const addGame = async () => {
 {/* ADMIN ADD GAME */}
 {showAdmin && (
   <div style={styles.adminBox}>
-        <h3>Admin Panel - Add Game</h3>
+        <h3>Admin Panel(Not for others)</h3>
 
         {Object.keys(newGame).map((key) => (
           <input
