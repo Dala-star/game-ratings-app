@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 const API_URL = "https://game-ratings-app.onrender.com";
 
 function App() {
-  const [showAdmin, setShowAdmin] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [games, setGames] = useState([]);
   const [user] = useState("Guest");
@@ -16,15 +15,6 @@ function App() {
 
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("default");
-
-  const [newGame, setNewGame] = useState({
-    name: "",
-    genre: "",
-    platform: "",
-    company: "",
-    link: "",
-    image: ""
-  });
 
   const [suggestion, setSuggestion] = useState({
     name: "",
@@ -67,46 +57,6 @@ function App() {
     setGames((prev) =>
       prev.map((g) => (g._id === updated._id ? updated : g))
     );
-  };
-
-  const addGame = async () => {
-    if (!newGame.name.trim()) {
-      alert("Game name is required");
-      return;
-    }
-
-    const key = prompt("Enter admin key");
-    if (!key) return;
-
-    try {
-      const res = await fetch(`${API_URL}/games`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "admin-key": key
-        },
-        body: JSON.stringify(newGame)
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Failed to add game");
-
-      setGames((prev) => [data, ...prev]);
-
-      setNewGame({
-        name: "",
-        genre: "",
-        platform: "",
-        company: "",
-        link: "",
-        image: ""
-      });
-
-      alert("Game added successfully");
-    } catch (err) {
-      alert(err.message);
-    }
   };
 
   const rateGame = async (id) => {
@@ -196,37 +146,11 @@ function App() {
         </select>
       </div>
 
-      <button
-        onClick={() => setShowAdmin(!showAdmin)}
-        style={styles.button}
-      >
-        {showAdmin ? "Hide Admin Panel" : "Admin Panel"}
-      </button>
-
-      {showAdmin && (
-        <div style={styles.adminBox}>
-          <h3>Admin Panel (Not for others)</h3>
-
-          {Object.keys(newGame).map((key) => (
-            <input
-              key={key}
-              placeholder={key}
-              value={newGame[key]}
-              style={styles.input}
-              onChange={(e) =>
-                setNewGame({ ...newGame, [key]: e.target.value })
-              }
-            />
-          ))}
-
-          <button onClick={addGame} style={styles.button}>
-            ➕ Add Game
-          </button>
-        </div>
-      )}
-
-      <div style={styles.adminBox}>
+      <div style={styles.suggestionBox}>
         <h3>Suggest a Game</h3>
+        <p style={styles.muted}>
+          Want a game added? Send a suggestion and I’ll review it.
+        </p>
 
         <input
           placeholder="Your name"
@@ -271,11 +195,7 @@ function App() {
 
           return (
             <div key={game._id} style={styles.card}>
-              <img
-                src={game.image}
-                alt={game.name}
-                style={styles.image}
-              />
+              <img src={game.image} alt={game.name} style={styles.image} />
 
               <h2>{game.name}</h2>
 
@@ -296,9 +216,15 @@ function App() {
 
               {isOpen && (
                 <div style={styles.details}>
-                  <p><b>Company:</b> {game.company || "Unknown"}</p>
-                  <p><b>Platform:</b> {game.platform || "Unknown"}</p>
-                  <p><b>Reviews:</b> {(game.comments || []).length}</p>
+                  <p>
+                    <b>Company:</b> {game.company || "Unknown"}
+                  </p>
+                  <p>
+                    <b>Platform:</b> {game.platform || "Unknown"}
+                  </p>
+                  <p>
+                    <b>Reviews:</b> {(game.comments || []).length}
+                  </p>
 
                   {game.link && (
                     <a
@@ -404,7 +330,7 @@ const styles = {
     marginBottom: "14px"
   },
 
-  adminBox: {
+  suggestionBox: {
     margin: "20px 0",
     padding: "16px",
     background: "#1e293b",
