@@ -49,12 +49,13 @@ const SuggestionSchema = new mongoose.Schema(
 const Game = mongoose.model("Game", GameSchema);
 const Suggestion = mongoose.model("Suggestion", SuggestionSchema);
 
-/* ================= ADMIN ================= */
+const ADMIN_KEY = process.env.ADMIN_KEY;
 
 const verifyAdmin = (req, res, next) => {
-  if (req.headers["admin-key"] !== "1234") {
+  if (req.headers["admin-key"] !== ADMIN_KEY) {
     return res.status(403).json({ error: "Unauthorized" });
   }
+
   next();
 };
 /* ---------------- GAME DATA (30 GAMES) ---------------- */

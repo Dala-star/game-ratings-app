@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const API_URL = "https://game-ratings-app.onrender.com";
-const ADMIN_KEY = "1234";
+const ADMIN_KEY = prompt("Enter admin key");
 
 function Admin() {
   const [allowed, setAllowed] = useState(false);
