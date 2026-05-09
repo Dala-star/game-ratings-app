@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
 const API_URL = "https://game-ratings-app.onrender.com";
-const ADMIN_KEY = prompt("Enter admin key");
 
 function Admin() {
   const [allowed, setAllowed] = useState(false);
+
   const [password, setPassword] = useState("");
+  const [adminKey, setAdminKey] = useState("");
+
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +21,13 @@ function Admin() {
   });
 
   const login = () => {
-    if (password === ADMIN_KEY) {
-      setAllowed(true);
-    } else {
-      alert("Wrong password");
+    if (!password.trim()) {
+      alert("Enter admin password");
+      return;
     }
+
+    setAdminKey(password);
+    setAllowed(true);
   };
 
   const fetchSuggestions = async () => {
@@ -31,20 +35,30 @@ function Admin() {
 
     try {
       const res = await fetch(`${API_URL}/suggestions`, {
-        headers: { "admin-key": ADMIN_KEY }
+        headers: {
+          "admin-key": adminKey
+        }
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unauthorized");
+      }
+
       setSuggestions(Array.isArray(data) ? data : []);
-    } catch {
-      alert("Failed to load suggestions");
+    } catch (err) {
+      alert(err.message);
+      setAllowed(false);
     }
 
     setLoading(false);
   };
 
   useEffect(() => {
-    if (allowed) fetchSuggestions();
+    if (allowed && adminKey) {
+      fetchSuggestions();
+    }
   }, [allowed]);
 
   const addGame = async () => {
@@ -58,7 +72,7 @@ function Admin() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "admin-key": ADMIN_KEY
+          "admin-key": adminKey
         },
         body: JSON.stringify(newGame)
       });
@@ -87,7 +101,9 @@ function Admin() {
   const approveSuggestion = async (id) => {
     await fetch(`${API_URL}/suggestions/${id}/approve`, {
       method: "POST",
-      headers: { "admin-key": ADMIN_KEY }
+      headers: {
+        "admin-key": adminKey
+      }
     });
 
     fetchSuggestions();
@@ -96,7 +112,9 @@ function Admin() {
   const rejectSuggestion = async (id) => {
     await fetch(`${API_URL}/suggestions/${id}/reject`, {
       method: "POST",
-      headers: { "admin-key": ADMIN_KEY }
+      headers: {
+        "admin-key": adminKey
+      }
     });
 
     fetchSuggestions();
@@ -127,7 +145,10 @@ function Admin() {
   return (
     <div style={styles.page}>
       <h1 style={styles.title}>Admin Dashboard</h1>
-      <p style={styles.subtitle}>Manage games and submitted suggestions</p>
+
+      <p style={styles.subtitle}>
+        Manage games and submitted suggestions
+      </p>
 
       <div style={styles.section}>
         <h2>Add Game</h2>
@@ -210,12 +231,15 @@ function Admin() {
           {suggestions.map((s) => (
             <div key={s._id} style={styles.card}>
               <h3>{s.gameTitle}</h3>
+
               <p>
                 <b>From:</b> {s.name || "Anonymous"}
               </p>
+
               <p>
                 <b>Message:</b> {s.message || "No message"}
               </p>
+
               <p>
                 <b>Status:</b> {s.status}
               </p>
